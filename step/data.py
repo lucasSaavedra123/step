@@ -398,11 +398,12 @@ def get_segmentation_dls(
     split_pct:float=0.2,      # Validation set split percentage from training data.
     shuffle:bool=True,        # Shuffle the dataset.
     tfm_y:Callable|None=None, # Transformation to apply to the target, e.g., `torch.log10`.
-    n_change:int|str=1,       # Number of changes in the trajectories, e.g., '1_to_4'.
+    #n_change:int|str=1,       # Number of changes in the trajectories, e.g., '1_to_4'.
     bm:bool=False,            # Is it Brownian motion (False for anomalous diffusion)
     **kwargs
     )->DataLoaders:
     "Obtain `DataLoaders` from dataset filtered by `models` and `exps` to predict `target`."
+    n_change = kwargs['n_change']
     ds = load_dataset(bm=bm, **kwargs)
     if bm: target = 'y_exp'
     if models is not None or exps is not None: ds = _filter_dataset(ds, models, exps, n_change)
