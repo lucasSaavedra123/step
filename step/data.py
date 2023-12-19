@@ -11,6 +11,7 @@ __all__ = ['ROOT', 'DATA_PATH', 'FIG_PATH', 'MODEL_PATH', 'MODEL_DATA', 'DEFAULT
 import os
 import numpy as np
 import pandas as pd
+import scipy
 from copy import deepcopy
 from fastcore.all import *
 from fastai.vision.all import *
@@ -271,10 +272,15 @@ def brownian_motion(n_traj, max_t, D, dim=1, dt=None):
     if dt is None:
         return_intervals = True
         #dt = np.random.uniform(100e-6, 10e-3, size=D.shape)
+        """
         dt = np.ones((n_traj, 1, max_t))
         for i_traje in range(n_traj):
             intervals_mean = np.random.uniform(100e-6, 10e-3)
             dt[i_traje,0,:] = np.random.exponential(intervals_mean, size=max_t)
+        """
+        lower, upper, scale = 100e-6, 50e-3, 500e-6
+        dt = scipy.stats.truncexpon(b=(upper-lower)/scale, loc=lower, scale=scale).rvs(n_traj*1*max_t)
+        dt = dt.reshape((n_traj, 1, max_t))
 
     bm = (np.sqrt(2*D*dt)*np.random.randn(n_traj, dim, max_t)).cumsum(-1)
     dt = dt.cumsum(-1)
